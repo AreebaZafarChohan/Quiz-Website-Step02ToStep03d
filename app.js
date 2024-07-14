@@ -115,16 +115,6 @@ export const questions = [
         correctAnswer: 1
     },
     {
-        question: "What is the correct syntax to import a default export from an ECMAScript module?",
-        options: [
-            "import defaultExport from './module';",
-            "import { defaultExport } from './module';",
-            "import * as defaultExport from './module';",
-            "import { default as defaultExport } from './module';"
-        ],
-        correctAnswer: 3
-    },
-    {
         question: "Which keyword is used to export a module function or variable as the default export?",
         options: [
             "export",
@@ -155,16 +145,6 @@ export const questions = [
         correctAnswer: 1
     },
     {
-        question: "What does tree-shaking refer to in the context of ECMAScript modules?",
-        options: [
-            "It refers to optimizing the size of the module by removing unused exports.",
-            "It refers to nesting modules inside one another for better organization.",
-            "It refers to loading modules in parallel for faster performance.",
-            "It refers to exporting and importing modules as a tree structure."
-        ],
-        correctAnswer: 0
-    },
-    {
         question: "Which type of export is used to export multiple functions or variables from a module?",
         options: [
             "Named export",
@@ -185,16 +165,6 @@ export const questions = [
         correctAnswer: 0
     },
     {
-        question: "What is the main purpose of the import.meta object in ECMAScript modules?",
-        options: [
-            "It provides metadata about the current module.",
-            "It imports external metadata into the module.",
-            "It dynamically imports modules at runtime.",
-            "It allows asynchronous loading of modules."
-        ],
-        correctAnswer: 0
-    },
-    {
         question: "Which keyword is used in JavaScript to declare variables with block scope?",
         options: [
             "var",
@@ -204,6 +174,56 @@ export const questions = [
         ],
         correctAnswer: 1
     },
+    {
+        question: "What is the purpose of the 'type' attribute in the script tag when using ECMAScript modules?",
+        options: [
+            "To specify the module's MIME type",
+            "To declare the script as an ECMAScript module",
+            "To enable async loading of the module",
+            "To indicate the script should be executed in strict mode"
+        ],
+        correctAnswer: 1
+    },
+    {
+        question: "How can you conditionally import a module in ECMAScript modules?",
+        options: [
+            "Using the require function",
+            "Using the import function inside an if statement",
+            "Using the import() function",
+            "Using the import.meta function"
+        ],
+        correctAnswer: 2
+    },
+    {
+        question: "What does tree-shaking refer to in the context of ECMAScript modules?",
+        options: [
+            "It refers to optimizing the size of the module by removing unused exports.",
+            "It refers to nesting modules inside one another for better organization.",
+            "It refers to loading modules in parallel for faster performance.",
+            "It refers to exporting and importing modules as a tree structure."
+        ],
+        correctAnswer: 0
+    },
+    {
+        question: "What is the correct syntax to import a named export from an ECMAScript module?",
+        options: [
+            "import namedExport from './module';",
+            "import { namedExport } from './module';",
+            "import * as namedExport from './module';",
+            "import { named as namedExport } from './module';"
+        ],
+        correctAnswer: 1
+    },
+    {
+        question: "How can you export a function from an ECMAScript module as a default export?",
+        options: [
+            "export default function myFunction() {}",
+            "export function myFunction() {}",
+            "module.exports = myFunction;",
+            "exports.myFunction = myFunction;"
+        ],
+        correctAnswer: 0
+    },    
     {
         question: "Which file extension is commonly used for ECMAScript modules in Node.js?",
         options: [
@@ -233,16 +253,6 @@ export const questions = [
             "ECMAScript modules cannot be imported in Node.js."
         ],
         correctAnswer: 2
-    },
-    {
-        question: "How does Node.js handle top-level await in ECMAScript modules by default?",
-        options: [
-            "It throws a syntax error.",
-            "It asynchronously executes top-level await expressions.",
-            "It synchronously executes top-level await expressions.",
-            "It requires using a special flag to enable top-level await."
-        ],
-        correctAnswer: 1
     },
     {
         question: "What is a key difference between ECMAScript modules (import/export) and CommonJS (require/module.exports) in Node.js?",
@@ -335,16 +345,6 @@ export const questions = [
         correctAnswer: 0
     },
     {
-        question: "Which command installs type definitions for the chalk library in TypeScript?",
-        options: [
-            "npm install chalk-types",
-            "npm install @types/chalk",
-            "npm install chalk --types",
-            "npm install @types/color"
-        ],
-        correctAnswer: 1
-    },
-    {
         question: "What is the purpose of the inquirer library in TypeScript?",
         options: [
             "To format and style console output",
@@ -410,7 +410,6 @@ export const questions = [
     },
 ];
 
-
 // Step 2: JavaScript Initialization
 const quiz = document.querySelector("#quiz");
 const answerElm = document.querySelectorAll(".answer");
@@ -418,12 +417,13 @@ const [questionElm, option_1, option_2, option_3, option_4] =
 document.querySelectorAll("#question, option_1, option_2, option_3, option_4 ");
 
 const submitBtn = document.querySelector("#submit");
+const viewAnswersBtn = document.querySelector("#view-answers");
 
 let currentQuiz = 0;
 let score = 0;
+let userAnswers = [];
 
 // Step 3: Load Quiz function
-
 const loadQuiz = () => {
     const {question, options} = questions[currentQuiz];
 
@@ -434,7 +434,6 @@ const loadQuiz = () => {
 loadQuiz();
 
 // Step 4: Get selected answer function on button click
-
 const getSelectedOption = () => {
     let answerElement = Array.from(answerElm)
     return answerElement.findIndex((curElement) => curElement.checked );
@@ -446,6 +445,7 @@ const deselectedAnswer = () => {
 
 submitBtn.addEventListener("click", () => {
     const selectedOptionIndex = getSelectedOption();
+    userAnswers.push(selectedOptionIndex);
 
     if (selectedOptionIndex === questions[currentQuiz].correctAnswer) {
         score++;
@@ -457,12 +457,24 @@ submitBtn.addEventListener("click", () => {
     } else {
         quiz.innerHTML = `<div class="result">
         <h2>🏆🥇 Your Score: ${score}/${questions.length} Correct Answers</h2>
-        <P>🎊✨ Congratulations on compeleting the quiz!</p>
-        <p>Don't loose hope and never give up! You can do it 💪🏻</p>
-        <button class = "reload-button" onclick = "window.location.reload()"> Restart </button>
+        <P>🎊✨ Congratulations on completing the quiz!</p>
+        <p>Don't lose hope and never give up! You can do it 💪🏻</p>
+        <button class = "reload-button" onclick = "window.location.reload()">Restart</button>
+        <button id="view-answers-btn">View Answers</button>
         </div>`;
+        document.querySelector("#view-answers-btn").addEventListener("click", () => {
+            displayAnswers();
+        });
     }
-
 });
 
-
+const displayAnswers = () => {
+    let answerHTML = `<div class="result view-answers"><h2>Correct Answers</h2>`;
+    questions.forEach((question, index) => {
+        answerHTML += `<p>Q${index + 1}: ${question.question}</p>`;
+        answerHTML += `<p>Your answer: ${question.options[userAnswers[index]]}</p>`;
+        answerHTML += `<p>Correct answer: ${question.options[question.correctAnswer]}</p><hr>`;
+    });
+    answerHTML += `<button class="reload-button" onclick="window.location.reload()">Restart</button></div>`;
+    quiz.innerHTML = answerHTML;
+};
